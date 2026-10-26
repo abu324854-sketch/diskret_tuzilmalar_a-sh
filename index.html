@@ -28,7 +28,6 @@
             .no-print { display: none !important; }
             .print-only { display: block !important; }
             body { background: white; color: black; }
-            .card-shadow { box-shadow: none !important; border: 1px solid #ccc !important; }
         }
     </style>
 </head>
@@ -58,6 +57,25 @@
     <!-- Main Content -->
     <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
         
+        <!-- Interactive Voice Guide Banner -->
+        <section class="bg-gradient-to-r from-brand-600 to-indigo-700 rounded-2xl p-6 mb-8 text-white shadow-xl no-print flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="space-y-2 text-center md:text-left">
+                <div class="inline-flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-xs font-medium border border-white/20">
+                    <i class="fa-solid fa-volume-high animate-pulse"></i> Interaktiv Ovozli Himoya Gid
+                </div>
+                <h2 class="text-xl font-bold">Loyihani ipidan ignasigacha tinglang</h2>
+                <p class="text-xs text-blue-100 max-w-xl">Ushbu tugmani bosish orqali dasturning ishlash prinsipi, mantiqiy parser va Karno kartasi haqida to'liq o'zbek tilida ovozli tushuntirinhni eshitishingiz mumkin.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleAudioGuide()" id="audioBtn" class="bg-white text-brand-700 hover:bg-blue-50 font-bold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-play" id="audioIcon"></i> <span id="audioBtnText">Tushuntirishni boshlash</span>
+                </button>
+                <button onclick="stopAudioGuide()" class="bg-red-500/80 hover:bg-red-600 text-white p-3 rounded-xl transition-all" title="To'xtatish">
+                    <i class="fa-solid fa-stop"></i>
+                </button>
+            </div>
+        </section>
+
         <!-- Input Section -->
         <section class="bg-white rounded-2xl p-6 mb-8 border border-slate-200/80 shadow-sm no-print">
             <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
@@ -177,6 +195,27 @@
 
         </div>
 
+        <!-- Project Explanation & Documentation Section -->
+        <section class="bg-white rounded-2xl p-8 border border-slate-200/80 shadow-sm mb-8">
+            <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-book-open text-brand-600"></i> Loyihaning batafsil tavsifi va arxitekturasi
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-600">
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-2"><i class="fa-solid fa-code text-brand-600"></i> 1. Mantiqiy Parser</h4>
+                    <p>Kiritilgan matnli ifodalarni tahlil qilib, konyunksiya, dizyunksiya, inkor, implikatsiya va ekvivalensiya amallarini JavaScript mantiqiy operatorlariga o'tkazib beradi.</p>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-2"><i class="fa-solid fa-table-cells text-brand-600"></i> 2. Haqiqiylik Jadvali va MDNSH</h4>
+                    <p>Barcha o'zgaruvchilar kombinatsiyasi uchun qiymatlarni hisoblab, Mukammal Dizyunktiv va Konyunktiv Normal shakllarni avtomatik tarzda shakllantiradi.</p>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-2"><i class="fa-solid fa-border-all text-brand-600"></i> 3. Karno Kartasi Vizualizatsiyasi</h4>
+                    <p>Gray kodi tartibida 2, 3 yoki 4 o'zgaruvchili Karno kartalarini qurib, optimal minimallashtirilgan mantiqiy tenglamalarni hisoblab beradi.</p>
+                </div>
+            </div>
+        </section>
+
         <!-- Authors & Project Section -->
         <section class="bg-white rounded-2xl p-8 border border-slate-200/80 shadow-sm mb-12">
             <div class="text-center max-w-2xl mx-auto mb-10">
@@ -216,10 +255,63 @@
         </div>
     </footer>
 
-    <!-- Logic Engine Script -->
+    <!-- Logic Engine & Speech Synthesis Script -->
     <script>
         let currentVariables = [];
         let currentTruthValues = [];
+        let synth = window.speechSynthesis;
+        let isSpeaking = false;
+
+        function toggleAudioGuide() {
+            if (!synth) {
+                alert("Brauzeringiz ovozli funksiyani qo'llab-quvvatlamaydi.");
+                return;
+            }
+
+            if (isSpeaking) {
+                synth.cancel();
+                isSpeaking = false;
+                document.getElementById('audioBtnText').innerText = "Tushuntirishni boshlash";
+                document.getElementById('audioIcon').className = "fa-solid fa-play";
+                return;
+            }
+
+            const textToSpeech = `
+                Assalomu alaykum ustoz va hurmatli tinglovchilar! Ushbu kurs ishi Toshkent menejment va iqtisodiyot instituti Kompyuter injiniringi yo'nalishi talabalari Fattoxov Abdulloh va Omonjonov Shohjahon tomonidan Diskret tuzilmalar fani uchun tayyorlandi. 
+                Loyiha, Boolean algebra ifodalarini soddalashtiruvchi va Karno kartalarini quruvchi veb-ilovadir. 
+                Dastur quyidagi imkoniyatlarga ega: birinchidan, mantiqiy ifodalar, konyunksiya, dizyunksiya, inkor, implikatsiya va ekvivalensiya amallarini qabul qilib, haqiqiylik jadvallarini tuzadi. 
+                Ikkinchidan, mukammal dizyunktiv va konyunktiv normal shakllarni avtomatik aniqlaydi. 
+                Uchinchidan, ikki, uch va to'rt o'zgaruvchili Karno kartalarini Gray kodi asosida qurib, mantiqiy ifodalarni minimal ko'rinishga keltiradi. 
+                Shuningdek, foydalanuvchi natijalarni CSV formatida yuklab olishi yoki akademik hisobot sifatida chop etishi mumkin. E'tiboringiz uchun rahmat!
+            `;
+
+            let utterance = new SpeechSynthesisUtterance(textToSpeech);
+            utterance.lang = 'uz-UZ';
+            utterance.rate = 0.95; // Ovoz tezligi
+
+            utterance.onstart = function() {
+                isSpeaking = true;
+                document.getElementById('audioBtnText').innerText = "Tushuntirishni to'xtatish";
+                document.getElementById('audioIcon').className = "fa-solid fa-pause";
+            };
+
+            utterance.onend = function() {
+                isSpeaking = false;
+                document.getElementById('audioBtnText').innerText = "Tushuntirishni boshlash";
+                document.getElementById('audioIcon').className = "fa-solid fa-play";
+            };
+
+            synth.speak(utterance);
+        }
+
+        function stopAudioGuide() {
+            if (synth) {
+                synth.cancel();
+                isSpeaking = false;
+                document.getElementById('audioBtnText').innerText = "Tushuntirishni boshlash";
+                document.getElementById('audioIcon').className = "fa-solid fa-play";
+            }
+        }
 
         function clearInput() {
             document.getElementById('exprInput').value = '';
